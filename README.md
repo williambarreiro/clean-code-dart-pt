@@ -158,7 +158,7 @@ Argumentos padrões são geralmente mais limpos do que curto circuitos. Esteja c
 
 **Ruim:**
 ```dart
-void createMicrobrewery(String? name) {
+void createMicrobrewery({String? name}) {
   final breweryName = name ?? 'Hipster Brew Co.';
   // ...
 }
@@ -168,6 +168,166 @@ void createMicrobrewery(String? name) {
 ```dart
 void createMicrobrewery({String breweryName = 'Hipster Brew Co.'}) {
   // ...
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+## **Funções**
+### Argumentos de funções (idealmente 2 ou menos)
+Limitar a quantidade de parâmetros de uma função é incrivelmente importante porque torna mais fácil testá-la. Ter mais que três leva a uma explosão combinatória onde você tem que testar muitos casos diferentes com cada argumento separadamente.
+
+Um ou dois argumentos é o caso ideal, e três devem ser evitados se possível. Qualquer coisa a mais que isso deve ser consolidada. Geralmente, se você tem mais que dois argumentos então sua função está tentando fazer muitas coisas. Nos casos em que não está, na maioria das vezes um objeto é suficiente como argumento.
+
+Para tornar mais óbvio quais as propriedades que as funções esperam, você pode usar parâmetros nomeados. Eles possuem algumas vantagens:
+
+1. Quando alguém olha para a assinatura de uma função, fica imediatamente claro quais propriedades são usadas.
+2. Linters podem te alertar sobre propriedades não utilizadas se elas forem `required`.
+
+**Ruim:**
+```dart
+void createMenu(String title, String body, String buttonText, bool cancellable) {
+  // ...
+}
+```
+
+**Bom:**
+```dart
+void createMenu({
+  required String title,
+  required String body,
+  required String buttonText,
+  required bool cancellable,
+}) {
+  // ...
+}
+
+createMenu(
+  title: 'Foo',
+  body: 'Bar',
+  buttonText: 'Baz',
+  cancellable: true,
+);
+```
+**[⬆ voltar ao topo](#Índice)**
+
+
+### Funções devem fazer uma coisa
+Essa é de longe a regra mais importante em engenharia de software. Quando funções fazem mais que uma coisa, elas se tornam difíceis de serem compostas, testadas e raciocinadas. Quando você pode isolar uma função para realizar apenas uma ação, elas podem ser refatoradas facilmente e seu código ficará muito mais limpo. Se você não levar mais nada desse guia além disso, você já estará na frente de muitos desenvolvedores.
+
+**Ruim:**
+```dart
+void emailClients(List<Client> clients) {
+  for(final client in clients) {
+    final clientRecord = database.lookup(client);
+    if (clientRecord.isActive()) {
+      email(client);
+    }
+  }
+}
+```
+
+**Bom:**
+```dart
+void emailActiveClients(List<Client> clients) {
+  clients
+    .where(isActiveClient)
+    .forEach(email);
+}
+
+bool isActiveClient(Client client) {
+  final clientRecord = database.lookup(client);
+  return clientRecord.isActive();
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Nomes de funções devem dizer o que elas fazem
+
+**Ruim:**
+```dart
+void addToDate(DateTime date, int months) {
+  // ...
+}
+
+final currentDate = DateTime.now();
+
+// É difícil dizer pelo nome da função o que é adicionado
+addToDate(currentDate, 1);
+```
+
+**Bom:**
+```dart
+void addMonthsToDate(int months, DateTime date) {
+  // ...
+}
+
+final currentDate = DateTime.now();
+addMonthsToDate(1, currentDate);
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Funções devem ter apenas um nível de abstração
+Quando você tem mais de um nível de abstração sua função provavelmente esta fazendo coisas demais. Dividir suas funções leva a reutilização e testes mais fáceis.
+
+**Ruim:**
+```dart
+void parseBetterAlternative(String code) {
+  const regexes = [
+    // ...
+  ];
+
+  final statements = code.split(' ');
+  final tokens = [];
+  for (final regex in regexes) {
+    for (final statement in statements) {
+      tokens.add( /* ... */ );
+    }
+  }
+
+  final ast = <Node>[];
+  for (final token in tokens) {
+    ast.add( /* ... */ );
+  }
+
+  for (final node in ast) {
+    // parse...
+  }
+}
+```
+
+**Bom:**
+```dart
+List<String> tokenize(String code) {
+  const regexes = [
+    // ...
+  ];
+
+  final statements = code.split(' ');
+  final tokens = <String>[];
+  for (final regex in regexes) {
+    for (final statement in statements) {
+      tokens.add( /* ... */ );
+    }
+  }
+
+  return tokens;
+}
+
+List<Node> lexer(List<String> tokens) {
+  final ast = <Node>[];
+  for (final token in tokens) {
+    ast.add( /* ... */ );
+  }
+  
+  return ast;
+}
+
+void parseBetterAlternative(String code) {
+  final tokens = tokenize(code);
+  final ast = lexer(tokens);
+  for (final node in ast) {
+    // parse...
+  }
 }
 ```
 **[⬆ voltar ao topo](#Índice)**
