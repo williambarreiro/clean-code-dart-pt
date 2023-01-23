@@ -331,3 +331,81 @@ void parseBetterAlternative(String code) {
 }
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+### Remova código duplicado
+Faça absolutamente seu melhor para evitar código duplicado. Código duplicado quer dizer que existe mais de um lugar onde você deverá alterar algo se precisar mudar alguma lógica.
+
+Imagine que você é dono de um restaurante e você toma conta do seu estoque: todos os seus tomates, cebolas, alhos, temperos, etc. Se você tem multiplas listas onde guarda estas informações, então você terá que atualizar todas elas quando servir um prato que tenha tomates. Se você tivesse apenas uma lista, teria apenas um lugar para atualizar!
+
+Frequentemente, você possui código duplicado porque você tem duas ou mais
+coisas levemente diferentes, que possuem muito em comum, mas suas diferenças lhe forçam a ter mais duas ou três funções que fazem muito das mesmas coisas. Remover código duplicado significa criar uma abstração que seja capaz de lidar com este conjunto de coisas diferentes com apenas uma função/módulo/classe.
+
+Conseguir a abstração correta é crítico, por isso que você deveria seguir os princípios SOLID descritos na seção *Classes*. Abstrações ruins podem ser piores do que código duplicado, então tome cuidado! Dito isto, se você puder fazer uma boa abstração, faça-a! Não repita a si mesmo, caso contrário você se pegará atualizando muitos lugares toda vez que precisar mudar qualquer coisinha.
+
+**Ruim:**
+```dart
+Widget buildDeveloperCard(Developer developer) {
+  return CustomCard(
+    expectedSalary: developer.calculateExpectedSalary(),
+    experience: developer.getExperience(),
+    projectsLink: developer.getGithubLink(),
+  );
+}
+
+Widget buildManagerCard(Manager manager) {
+  return CustomCard(
+    expectedSalary: manager.calculateExpectedSalary(),
+    experience: manager.getExperience(),
+    projectsLink: manager.getMBAProjects(),
+  );
+}
+```
+
+**Bom:**
+```dart
+Widget buildEmployeeCard(Employee employee) {
+  String projectsLink;
+
+  switch (employee.runtimeType) {
+    case Manager:
+      projectsLink = manager.getMBAProjects();
+      break;
+    case Developer:
+      projectsLink = developer.getGithubLink();
+      break;
+  }
+
+  return CustomCard(
+    expectedSalary: employee.calculateExpectedSalary(),
+    experience: employee.getExperience(),
+    projectsLink: projectsLink,
+  );
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Não use flags como parâmetros de funções
+Flags falam para o seu usuário que sua função faz mais de uma coisa. Funções devem fazer apenas uma coisa. Divida suas funções se elas estão seguindo caminhos de código diferentes baseadas em um valor booleano.
+
+**Ruim:**
+```dart
+void createFile(String name, bool temp) {
+  if (temp) {
+    File('./temp/${name}').create();
+  } else {
+    File(name).create();
+  }
+}
+```
+
+**Bom:**
+```dart
+void createFile(String name) {
+  File(name).create();
+}
+
+void createTempFile(String name) {
+  File('./temp/${name}').create();
+}
+```
+**[⬆ voltar ao topo](#Índice)**
