@@ -409,3 +409,79 @@ void createTempFile(String name) {
 }
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+### Evite Efeitos Colaterais (parte 1)
+Uma função produz um efeito colateral se ela faz alguma coisa que não seja receber um valor de entrada e retornar outro(s) valor(es). Um efeito colateral pode ser escrever em um arquivo, modificar uma variável global, ou acidentalmente transferir todo seu dinheiro para um estranho.
+
+Agora, você precisa de efeitos colaterais ocasionalmente no seu programa. Como no exemplo anterior, você pode precisar escrever em um arquivo. O que você quer fazer é centralizar aonde está fazendo isto. Não tenha diversas funções e classes que escrevam para um arquivo em particular. Tenha um serviço que faça isso. Um e apenas um.
+
+O ponto principal é evitar armadilhas como compartilhar o estado entre objetos sem nenhuma estrutura, usando tipos de dados mutáveis que podem ser escritos por qualquer coisa, e não centralizando onde seu efeito colateral acontece. Se você conseguir fazer isto, você será muito mais feliz que a grande maioria dos outros programadores.
+
+**Ruim:**
+```dart
+// Variável global referenciada pela função seguinte
+// Se tivéssemos outra função que usa esse nome, então seria um vetor (array) e poderia quebrar seu código
+dynamic name = 'Ryan McDermott';
+
+void splitIntoFirstAndLastName() {
+  name = name.split(' ');
+}
+
+splitIntoFirstAndLastName();
+
+print(name); // ['Ryan', 'McDermott'];
+```
+
+**Bom:**
+```dart
+List<String> splitIntoFirstAndLastName(name) {
+  return name.split(' ');
+}
+
+final name = 'Ryan McDermott';
+final newName = splitIntoFirstAndLastName(name);
+
+print(name); // 'Ryan McDermott';
+print(newName); // ['Ryan', 'McDermott'];
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Evite Efeitos Colaterais (parte 2)
+Em Dart, tipos primitivos são passados por valor e objetos/vetores são passados por referência. No caso de objetos e vetores, se sua função faz uma mudança em um vetor de um carrinho de compras, por exemplo, adicionando um item para ser comprado, então qualquer outra função que use o vetor `cart` também será afetada por essa adição. Isso pode ser ótimo, mas também pode ser ruim. Vamos imaginar uma situação ruim:
+
+O usuário clica no botão "Comprar", botão que invoca a função `purchase` que dispara uma série de requisições e manda o vetor `cart` para o servidor. Devido a uma conexão ruim de internet, a função `purchase` precisa fazer novamente a requisição. Agora, imagine que nesse meio tempo o usuário acidentalmente clique no botão `Adicionar ao carrinho` em um produto que ele não queria antes da requisição começar. Se isto acontecer e a requisição for enviada novamente, então a função `purchase` irá enviar acidentalmente o vetor com o novo produto adicionado porque existe uma referência para o vetor `cart` que a função `addItemToCart` modificou adicionando um produto indesejado.
+
+Uma ótima solução seria que a função `addCartToItem` sempre clonasse o vetor `cart`, editasse-o, e então retornasse seu clone. Isso garante que nenhuma outra função que possua uma referência para o carrinho de compras seja afetada por qualquer mudança feita.
+
+Duas ressalvas desta abordagem:
+
+  1. Podem haver casos onde você realmente quer mudar o objeto de entrada, mas quando você adota este tipo de programação, você vai descobrir que estes casos são bastante raros. A maioria das coisas podem ser refatoradas para não terem efeitos colaterais.
+
+  2. Clonar objetos grandes pode ser bastante caro em termos de desempenho. Com sorte, na prática isso não é um problema, porque existem [ótimas bibliotecas](https://facebook.github.io/immutable-js/) que permitem que este tipo de programação seja rápida e não seja tão intensa no uso de memória quanto seria se você clonasse manualmente objetos e vetores.
+
+
+**Ruim:**
+```dart
+void addItemToCart(List<int> cart, int item) {
+  cart.add(item);
+} 
+
+final cart = [1, 2];
+addItemToCart(cart, 3);
+
+print(cart); // [1, 2, 3]
+```
+
+**Bom:**
+```dart
+List<int> addItemToCart(List<int> cart, int item) {
+  return [...cart, item];
+}
+
+final cart = [1, 2];
+final newCart = addItemToCart(cart, 3);
+
+print(cart); // [1, 2]
+print(newCart); // [1, 2, 3]
+```
+**[⬆ voltar ao topo](#Índice)**
