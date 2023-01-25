@@ -485,3 +485,157 @@ print(cart); // [1, 2]
 print(newCart); // [1, 2, 3]
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+### Favoreça programação funcional sobre programação imperativa
+Dart não é uma linguagem funcional da mesma forma que Haskell é, mas possui algumas características funcionais. Linguagens funcionais são mais limpas e fáceis de se testar. Favoreça esse tipo de programação quando puder.
+
+**Ruim:**
+```dart
+final programmerOutput = <Programmer>[
+  Programmer(name: 'Uncle Bobby', linesOfCode: 500),
+  Programmer(name: 'Suzie Q', linesOfCode: 1500),
+  Programmer(name: 'Jimmy Gosling', linesOfCode: 150),
+  Programmer(name: 'Gracie Hopper', linesOfCode: 1000),
+];
+
+var totalOutput = 0;
+
+for (var i = 0; i < programmerOutput.length; i++) {
+  totalOutput += programmerOutput[i].linesOfCode;
+}
+```
+
+**Bom:**
+```dart
+final programmerOutput = <Programmer>[
+  Programmer(name: 'Uncle Bobby', linesOfCode: 500),
+  Programmer(name: 'Suzie Q', linesOfCode: 1500),
+  Programmer(name: 'Jimmy Gosling', linesOfCode: 150),
+  Programmer(name: 'Gracie Hopper', linesOfCode: 1000),
+];
+
+final totalOutput = programmerOutput.fold<int>(
+    0, (previousValue, programmer) => previousValue + programmer.linesOfCode);
+```
+**[⬆ volta ao topo](#Índice)**
+
+### Encapsule condicionais
+
+**Ruim:**
+```dart
+if (programmer.language == 'dart' && programmer.projectsList.isNotEmpty) {
+  // ...
+}
+```
+
+**Bom:**
+```dart
+bool isValidDartProgrammer(Programmer programmer) {
+  return programmer.language == 'dart' && programmer.projectsList.isNotEmpty;
+}
+
+if (isValidDartProgrammer(programmer)) {
+  // ...
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Evite negações de condicionais
+
+**Ruim:**
+```dart
+bool isFileNotValid(File file) {
+  // ...
+}
+
+if (!isFileNotValid(file)) {
+  // ...
+}
+```
+
+**Bom:**
+```dart
+bool isFileValid(File file) {
+  // ...
+}
+
+if (isFileValid(file)) {
+  // ...
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Evite condicionais
+Esta parece ser uma tarefa impossível. Da primeira vez que as pessoas escutam isso, a maioria diz, “como eu supostamente faria alguma coisa sem usar `if`? ” A resposta é que você pode usar polimorfismo para realizar a mesma tarefa em diversos casos. A segunda questão é geralmente, “bom, isso é ótimo, mas porque eu deveria fazer isso?” A resposta é um conceito de código limpo aprendido previamente: uma função deve fazer apenas uma coisa. Quando você tem classes e funções que tem declarações `if`, você esta dizendo para seu usuário que sua função faz mais de uma coisa. Relembre-se, apenas uma coisa.
+
+**Ruim:**
+```dart
+class Airplane {
+  // ...
+  double getCruisingAltitude() {
+    switch (type) {
+      case '777':
+        return getMaxAltitude() - getPassengerCount();
+      case 'Air Force One':
+        return getMaxAltitude();
+      case 'Cessna':
+        return getMaxAltitude() - getFuelExpenditure();
+    }
+  }
+}
+```
+
+**Bom:**
+```dart
+class Airplane {
+  // ...
+}
+
+class Boeing777 extends Airplane {
+  // ...
+  double getCruisingAltitude() {
+    return getMaxAltitude() - getPassengerCount();
+  }
+}
+
+class AirForceOne extends Airplane {
+  // ...
+  double getCruisingAltitude() {
+    return getMaxAltitude();
+  }
+}
+
+class Cessna extends Airplane {
+  // ...
+  double getCruisingAltitude() {
+    return getMaxAltitude() - getFuelExpenditure();
+  }
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Remova código morto
+Código morto é tão ruim quanto código duplicado. Não existe nenhum motivo para deixá-lo em seu código. Se ele não estiver sendo chamado, livre-se dele. Ele ainda estará a salvo no seu histórico de versionamento se ainda precisar dele.
+
+**Ruim:**
+```dart
+Future<void> oldRequest(url) {
+  // ...
+}
+
+Future<void> newRequest(url) {
+  // ...
+}
+
+await newRequest();
+```
+
+**Bom:**
+```dart
+Future<void> newRequest(url) {
+  // ...
+}
+
+await newRequest();
+```
+**[⬆ voltar ao topo](#Índice)**
