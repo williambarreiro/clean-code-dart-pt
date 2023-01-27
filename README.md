@@ -711,3 +711,122 @@ final employee = Employee(name: 'John Doe');
 print(employee.name); // Não é possível acessar de fora da classe.
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **Classes**
+### Use encadeamento de métodos (cascade notation)
+Este padrão permite que seu código seja expressivo e menos verboso. Por esse motivo, eu digo, use encadeamento de métodos e dê uma olhada em como o seu código ficará mais limpo.
+
+**Ruim:**
+```dart
+class Car {
+  String make;
+  String model;
+  String color;
+
+  Car({
+    required this.make,
+    required this.model,
+    required this.color,
+  });
+
+  save() => print('$make, $model, $color');
+}
+
+final car = Car(make: 'Ford', model: 'F-150', color: 'red');
+car.color = 'pink';
+car.save();
+```
+
+**Bom:**
+```dart
+class Car {
+  String make;
+  String model;
+  String color;
+
+  Car({
+    required this.make,
+    required this.model,
+    required this.color,
+  });
+
+  save() => print('$make, $model, $color');
+}
+
+final car = Car(make: 'Ford', model: 'F-150', color: 'red')
+  ..color = 'pink'
+  ..save();
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Prefira composição ao invés de herança
+Como dito famosamente em [*Padrão de projeto*](https://pt.wikipedia.org/wiki/Padr%C3%A3o_de_projeto_de_software) pela Gangue dos Quatro, você deve preferir composição sobre herança onde você puder. Existem muitas boas razões para usar herança e muitas boas razões para se usar composição. O ponto principal para essa máxima é que se sua mente for instintivamente para a herança, tente pensar se composição poderia modelar melhor o seu problema. Em alguns casos pode.
+
+Você deve estar pensando então, "quando eu deveria usar herança?" Isso depende especificamente do seu problema, mas essa é uma lista decente de quando herança faz mais sentido que composição:
+
+1. Sua herança representa uma relação de "isto-é" e não uma relação de "isto-tem" (Human→Animal vs. User->UserDetails)
+2. Você pode reutilizar código de classes de base (Humanos podem se mover como todos os animais).
+3. Você quer fazer mudanças globais para classes derivadas mudando apenas a classe base. (Mudar o custo calórico para todos os animais quando se movem).
+
+**Ruim:**
+```dart
+class Employee {
+  String name;
+  String email;
+
+  Employee({
+    required this.name,
+    required this.email,
+  });
+
+  // ...
+}
+
+// Ruim porque Employees (Empregados) "tem" dados de impostos. EmployeeTaxData não é um tipo de Employee.
+class EmployeeTaxData extends Employee {
+  String ssn;
+  double salary;
+
+  EmployeeTaxData({
+    required this.ssn,
+    required this.salary,
+    required super.name,
+    required super.email,
+  });
+
+  // ...
+}
+```
+
+**Bom:**
+```dart
+class EmployeeTaxData {
+  String ssn;
+  double salary;
+
+  EmployeeTaxData({
+    required this.ssn,
+    required this.salary,
+  });
+
+  // ...
+}
+
+class Employee {
+  String name;
+  String email;
+  EmployeeTaxData? taxData;
+
+  Employee({
+    required this.name,
+    required this.email,
+  });
+
+  void setTaxData(String ssn, double salary) {
+    taxData = EmployeeTaxData(ssn: ssn, salary: salary);
+  }
+
+  // ...
+}
+```
+**[⬆ voltar ao topo](#Índice)**
