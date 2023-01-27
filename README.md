@@ -830,3 +830,210 @@ class Employee {
 }
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **SOLID**
+### Princípio da Responsabilidade Única (SRP)
+Como dito em Código Limpo, "Nunca deveria haver mais de um motivo para uma classe ter que mudar". É tentador empacotar uma classe em excesso com muitas funcionalidades, como quando você pode levar apenas uma mala em seu voo. O problema com isso é que sua classe não será conceitualmente coesa e dar-lhe-á diversos motivos para mudá-la. Minimizar o número de vezes que você precisa mudar uma classe é importante, porque, se muitas funcionalidades estão em uma classe e você mudar uma porção dela, pode ser difícil entender como isto afetará outras módulos que dependem dela no seu código.
+
+**Ruim:**
+```dart
+class UserSettings {
+  String user;
+  
+  UserSettings({
+    required this.user,
+  });
+
+  void changeSettings(Settings settings) {
+    if (verifyCredentials()) {
+      // ...
+    }
+  }
+
+  bool verifyCredentials() {
+    // ...
+  }
+}
+```
+
+**Bom:**
+```dart
+class UserAuth {
+  String user;
+
+  UserAuth({
+    required this.user,
+  });
+
+  bool verifyCredentials() {
+    // ...
+  }
+}
+
+class UserSettings {
+  String user;
+  UserAuth auth;
+
+  UserSettings({
+    required this.user,
+  }) : auth = UserAuth(user: user);
+
+  void changeSettings(Settings settings) {
+    if (auth.verifyCredentials()) {
+      // ...
+    }
+  }
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Princípio do Aberto/Fechado (OCP)
+Como foi dito por Bertrand Meyer, "entidades de software (classes, módulos, funções, etc.) devem se manter abertas para extensões, mas fechadas para modificações." Mas o que isso significa? Esse princípio basicamente diz que você deve permitir que usuários adicionem novas funcionalidades sem mudar código já existente.
+
+**Ruim:**
+```dart
+double getArea(Shape shape) {
+  if (shape is Circle) {
+    return getCircleArea(shape);
+  } else if (shape is Square) {
+    return getSquareArea(shape);
+  }
+}
+
+double getCircleArea(Shape shape) {
+  // ...
+}
+
+double getSquareArea(Shape shape) {
+  // ...
+}
+```
+
+**Bom:**
+```dart
+abstract class Shape {
+  double getArea();
+}
+
+class Circle extends Shape {
+  @override
+  double getArea() {
+    // ...
+  }
+}
+
+class Square extends Shape {
+  @override
+  double getArea() {
+    // ...
+  }
+}
+
+// ...
+final area = shape.getArea();
+```
+**[⬆ voltar ao topo](#Índice)**
+
+
+### Princípio de Substituição de Liskov (LSP)
+Esse é um termo assustador para um conceito extremamente simples. É formalmente definido como “Se S é um subtipo de T, então objetos do tipo T podem ser substituídos por objetos com o tipo S (i.e., objetos do tipo S podem substituir objetos do tipo T) sem alterar nenhuma das propriedades desejáveis de um programa (corretude, desempenho em tarefas, etc.).” Esta é uma definição ainda mais assustadora.
+
+A melhor explicação para este conceito é se você tiver uma classe pai e uma classe filha, então a classe base e a classe filha pode ser usadas indistintamente sem ter resultados incorretos. Isso ainda pode ser confuso, então vamos dar uma olhada no exemplo clássico do Quadrado-Retângulo (Square-Rectangle). Matematicamente, um quadrado é um retângulo, mas se você modelá-lo usando uma relação “isto-é” através de herança, você rapidamente terá problemas.
+
+**Ruim:**
+```dart
+class Rectangle {
+  double width;
+  double height;
+
+  Rectangle({
+    this.width = 0,
+    this.height = 0,
+  });
+
+  // setWidth e setHeight usados apenas para este exemplo
+  void setWidth(double value) => width = value;
+
+  void setHeight(double value) => height = value;
+
+  double getArea() {
+    return width * height;
+  }
+}
+
+class Square extends Rectangle {
+  Square({
+    super.width = 0,
+    super.height = 0,
+  });
+
+  @override
+  void setWidth(double value) {
+    width = value;
+    height = value;
+  }
+
+  @override
+  void setHeight(double value) {
+    width = value;
+    height = value;
+  }
+}
+
+final rectangles = [Rectangle(), Rectangle(), Square()];
+
+for (final rectangle in rectangles) {
+  rectangle.setWidth(4);
+  rectangle.setHeight(5);
+
+  final area = rectangle.getArea();
+  print(area); // RUIM: Retorna 25 para o Quadrado. Mas acaba não sendo o height x width esperado.
+}
+```
+
+**Bom:**
+```dart
+abstract class Shape {
+  double getArea();
+}
+
+class Rectangle extends Shape {
+  double width;
+  double height;
+
+  Rectangle({
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  double getArea() {
+    return width * height;
+  }
+}
+
+class Square extends Shape {
+  double length;
+
+  Square({
+    required this.length,
+  });
+
+  @override
+  double getArea() {
+    return length * length;
+  }
+}
+
+final rectangles = [
+  Rectangle(width: 4, height: 5),
+  Rectangle(width: 4, height: 5),
+  Square(length: 4),
+];
+
+for (final rectangle in rectangles) {
+  final area = rectangle.getArea();
+  print(area); // Mostra os valores corretamente: 20, 20, 16.
+}
+```
+**[⬆ voltar ao topo](#Índice)**
