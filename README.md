@@ -639,3 +639,75 @@ Future<void> newRequest(url) {
 await newRequest();
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **Objetos e Estruturas de Dados**
+### Use getters e setters apenas quando necessário
+Diferente de outras linguagens, no Dart o recomendado é usar getters e setters apenas quando existe alguma lógica antes da utilização do atributo. Quando a ideia é puramente pegar ou editar o atributo, o ideal é não usá-los.
+
+
+**Ruim:**
+```dart
+class BankAccount {
+  // "_" configura como privado
+  int _balance;
+
+  int get balance => _balance;
+
+  set balance(int amount) => _balance = amount;
+
+  BankAccount({
+    int balance = 0,
+  }) : _balance = balance;
+}
+
+final account = BankAccount();
+account.balance = 100;
+```
+
+**Bom:**
+```dart
+class BankAccount {
+  int balance;
+  // ...
+
+  BankAccount({
+    this.balance = 0,
+    // ...
+  });
+}
+
+final account = BankAccount();
+account.balance = 100;
+```
+**[⬆ voltar ao topo](#Índice)**
+
+
+### Utilize métodos e atributos privados
+Se um método ou atributo deve ser utilizado apenas dentro de uma classe, ele deve ser privado.
+
+**Ruim:**
+```dart
+class Employee {
+  String name;
+
+  Employee({required this.name});
+}
+
+final employee = Employee(name: 'John Doe');
+print(employee.name); // John Doe
+employee.name = 'Uncle Bob';
+print(employee.name); // Uncle Bob
+```
+
+**Bom:**
+```dart
+class Employee {
+  String _name;
+
+  Employee({required String name}) : _name = name;
+}
+
+final employee = Employee(name: 'John Doe');
+print(employee.name); // Não é possível acessar de fora da classe.
+```
+**[⬆ voltar ao topo](#Índice)**
