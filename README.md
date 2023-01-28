@@ -1037,3 +1037,149 @@ for (final rectangle in rectangles) {
 }
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+### Princípio da Segregação de Interface (ISP)
+O ISP diz que "Clientes não devem ser forçados a depender de métodos que eles não usam". O correto é sempre criar interfaces mais específicas ao invés de criar apenas uma interface genérica. Ou seja, se a sua classe que implementa uma interface usa o famoso `throw UnimplementedError()`, ela provavelmente não respeita o princípio.
+
+**Ruim:**
+```dart
+abstract class Book {
+  int getNumberOfPages();
+  void download();
+}
+
+class EBook implements Book {
+  @override
+  int getNumberOfPages() {
+    // ...
+  }
+
+  @override
+  String download() {
+    // ...
+  }
+}
+
+class PhysicalBook implements Book {
+  @override
+  int getNumberOfPages() {
+    // ...
+  }
+
+  @override
+  void download() {
+    throw UnimplementedError(); // Livro físico não tem download.
+  }
+}
+```
+
+**Bom:**
+```dart
+abstract class Book {
+  int getNumberOfPages();
+}
+
+abstract class DownloadableBook {
+  void download();
+}
+
+class EBook implements Book, DownloadableBook {
+  @override
+  int getNumberOfPages() {
+    // ...
+  }
+
+  @override
+  void download() {
+    // ...
+  }
+}
+
+class PhysicalBook implements Book {
+  @override
+  int getNumberOfPages() {
+    // ...
+  }
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Princípio da Inversão de Dependência  (DIP)
+Este princípio nos diz duas coisas essenciais:
+1. Módulos de alto nível não devem depender de módulos de baixo nível. Ambos devem depender de abstrações.
+2. Abstrações não devem depender de detalhes. Detalhes devem depender de abstrações.
+
+Você já pode ter visto uma implementação deste princípio na forma de injeção de dependência (DI). Apesar de não serem conceitos idênticos, DIP não deixa módulos de alto nível saber os detalhes de seus módulos de baixo nível, assim como configurá-los. Isso pode ser alcançado através de DI. Um grande benefício é que reduz o acoplamento entre os módulos. Acoplamento é um padrão de desenvolvimento muito ruim porque torna seu código mais difícil de ser refatorado.
+
+**Ruim:**
+```dart
+class InventoryRequester {
+  void requestItem(item) {
+    // ...
+  }
+}
+
+class InventoryTracker {
+  final requester = InventoryRequester(); // InventoryTracker dependendo de um módulo de baixo nível.
+  List<String> items;
+
+  InventoryTracker({
+    required this.items,
+  });
+
+  void requestItems() {
+    for (var item in items) {
+      requester.requestItem(item);
+    }
+  }
+}
+
+final inventoryTracker = InventoryTracker(items: ['apples', 'bananas']);
+inventoryTracker.requestItems();
+```
+
+**Bom:**
+```dart
+class InventoryTracker {
+  List<String> items;
+  InventoryRequester requester;
+
+  InventoryTracker({
+    required this.items,
+    required this.requester,
+  });
+
+  void requestItems() {
+    for (var item in items) {
+      requester.requestItem(item);
+    }
+  }
+}
+
+abstract class InventoryRequester {
+  void requestItem(item);
+}
+
+class InventoryRequesterV1 implements InventoryRequester {
+  @override
+  void requestItem(item) {
+    // ...
+  }
+}
+
+class InventoryRequesterV2 implements InventoryRequester {
+  @override
+  void requestItem(item) {
+    // ...
+  }
+}
+
+// Construindo nossas dependências externamente e injetando-as, podemos facilmente
+// substituir nosso módulo de request por um mais novo.
+final inventoryTracker = InventoryTracker(
+  items: ['apples', 'bananas'],
+  requester: InventoryRequesterV2(),
+);
+inventoryTracker.requestItems();
+```
+**[⬆ voltar ao topo](#Índice)**
