@@ -1183,3 +1183,41 @@ final inventoryTracker = InventoryTracker(
 inventoryTracker.requestItems();
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **Testes**
+Testes são mais importantes que entregas. Se você não possui testes ou uma quantidade inadequada deles, então toda vez que você entregar seu código você não terá certeza se você não quebrou alguma coisa. Decidir o que constitui uma quantidade adequada é responsabilidade do seu time, mas ter 100% de cobertura (todas as sentenças e branches) é a maneira que se alcança uma alta confiança e uma paz de espírito no desenvolvimento.
+
+Sempre escreva testes para cada nova funcionalidade/módulo que você introduzir. Se seu método preferido for Desenvolvimento Orientado a Testes (TDD), isso é ótimo, mas o ponto principal é apenas ter certeza que você está alcançando suas metas de cobertura antes de lançar qualquer funcionalidade, ou refatorar uma já existente.
+
+### Um conceito por teste
+
+**Ruim:**
+```dart
+import 'package:test/test.dart';
+
+test('String', () {
+  var string = 'foo,bar,baz';
+  expect(string.split(','), equals(['foo', 'bar', 'baz']));
+
+  string = '  foo ';
+  expect(string.trim(), equals('foo'));
+});
+```
+
+**Bom:**
+```dart
+import 'package:test/test.dart';
+
+group('String', () {
+  test('.split() splits the string on the delimiter', () {
+    final string = 'foo,bar,baz';
+    expect(string.split(','), equals(['foo', 'bar', 'baz']));
+  });
+
+  test('.trim() removes surrounding whitespace', () {
+    final string = '  foo ';
+    expect(string.trim(), equals('foo'));
+  });
+});
+```
+**[⬆ voltar ao topo](#Índice)**
