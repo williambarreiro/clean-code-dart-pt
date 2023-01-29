@@ -1221,3 +1221,30 @@ group('String', () {
 });
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **Concorrência**
+### Utilize async/await no lugar de then
+Utilizar async/await deixa seu código mais simples de entender.
+
+**Ruim:**
+```dart
+final albumTitle = await client
+    .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'))
+    .then((response) {
+  // ...
+  return title;
+});
+```
+
+**Bom:**
+```dart
+Future<String> getAlbumTitle() async {
+  final response = await client
+      .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
+
+  // ...
+
+  return title;
+}
+```
+**[⬆ voltar ao topo](#Índice)**
