@@ -1248,3 +1248,68 @@ Future<String> getAlbumTitle() async {
 }
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **Tratamento de Erros**
+`throw error` é uma coisa boa! Eles significam que o programa identificou
+com sucesso quando algo deu errado e está permitindo que você saiba disso parando
+a execução da função no processo atual, fechando o processo, e
+notificando você no console com a pilha de processos.
+
+### Não ignore erros capturados
+Não fazer nada com um erro capturado não te dá a habilidade de resolvê-lo ou
+reagir ao erro informado. Exibir um log no console(`log`) não é muito
+melhor porque muitas vezes ele pode ficar perdido entre um monte de outras
+coisas impressas no console. Se você envolver qualquer pedaço de código em um
+`try/catch` isso significa que você acredita que um erro pode ocorrer lá e então
+você deveria ter um plano, ou criar caminho de código para quando isso ocorrer.
+
+**Ruim:**
+```dart
+try {
+  functionThatMightThrow();
+} catch (error) {
+  print(error);
+}
+```
+
+**Bom:**
+```dart
+try {
+  functionThatMightThrow();
+} catch (e, s) {
+  // Opção 1:
+  log('Error description...', error: e, stackTrace: s);
+  // Opção 2:
+  notifyUserOfError(e, s);
+  // Opção 3:
+  reportErrorToService(e, s);
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Não ignore erros nos Futures
+Caso queira usar o future/then, lembre-se de também tratar os erros.
+
+**Ruim:**
+```dart
+functionThatMightThrow().then((value) {
+  // ...
+}).onError((e, s) {
+  print(e);
+});
+```
+
+**Bom:**
+```dart
+functionThatMightThrow().then((value) {
+  // ...
+}).onError((e, s) {
+  // Opção 1:
+  log('Error description...', error: e, stackTrace: s);
+  // Opção 2:
+  notifyUserOfError(e, s);
+  // Opção 3:
+  reportErrorToService(e, s);
+});
+```
+**[⬆ voltar ao topo](#Índice)**
