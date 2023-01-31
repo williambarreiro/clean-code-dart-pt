@@ -1313,3 +1313,114 @@ functionThatMightThrow().then((value) {
 });
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **Formatação**
+Formatação é subjetiva. Como muitas regras aqui, não há nenhuma regra que você TEM que seguir. O ponto principal é NÃO DISCUTA sobre formatação.
+Aconselho dar uma lida no [Effective Dart](https://dart.dev/guides/language/effective-dart/style), lá são mostrados vários padrões a serem seguidos, mas nada é obrigatório.
+
+### Utilize a capitalização correta
+
+**Ruim:**
+```dart
+const DAYS_IN_WEEK = 7;
+
+const Bands = ['AC/DC', 'Led Zeppelin', 'The Beatles'];
+
+void restore_database() {}
+
+class animal {}
+
+typedef predicate<T> = bool Function(T value);
+```
+
+**Bom:**
+```dart
+// lowerCamelCase for constant names
+const daysInWeek = 7;
+const bands = ['AC/DC', 'Led Zeppelin', 'The Beatles'];
+
+// lowerCamelCase for functions
+void restoreDatabase() {}
+
+// UpperCamelCase for classes, enum types, typedefs, and type parameters
+class Animal {}
+typedef Predicate<T> = bool Function(T value);
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Funções e chamadas de funções devem estar próximas
+Se uma função chamar outra, mantenha estas funções verticalmente próximas no arquivo
+fonte. Em um cenário ideal, manter a chamada logo acima da função. Nós tendemos a
+ler códigos de cima para baixo, como em um jornal. Por causa disso, faça o seu código
+desta maneira.
+
+**Ruim:**
+```dart
+class Smartphone {
+  // ...
+
+  String getOS() {
+    // ...
+  }
+
+  void showPlatform() {
+    final os = getOS();
+    final chipset = getChipset();
+    // ...
+  }
+
+  String getResolution() {
+    // ...
+  }
+
+  void showSpecifications() {
+    showPlatform();
+    showDisplay();
+  }
+
+  String getChipset() {
+    // ...
+  }
+
+  void showDisplay() {
+    final resolution = getResolution();
+    // ...
+  }
+}
+```
+
+**Bom:**
+```dart
+class Smartphone {
+  // ...
+
+  void showSpecifications() {
+    showPlatform();
+    showDisplay();
+  }
+
+  void showPlatform() {
+    final os = getOS();
+    final chipset = getChipset();
+    // ...
+  }
+
+  String getOS() {
+    // ...
+  }
+
+  String getChipset() {
+    // ...
+  }
+
+  void showDisplay() {
+    final resolution = getResolution();
+    // ...
+  }
+
+  String getResolution() {
+    // ...
+  }
+}
+```
+**[⬆ voltar ao topo](#Índice)**
