@@ -1424,3 +1424,122 @@ class Smartphone {
 }
 ```
 **[⬆ voltar ao topo](#Índice)**
+
+## **Comentários**
+### Apenas comente coisas que tenham complexidade de lógica de negócio.
+Comentários são uma desculpa, não um requisito. Um bom código documenta-se, *a maior parte*, por si só.
+
+**Ruim:**
+```dart
+List<String> getCitiesNames(List<String> cities) {
+  // Lista com os nomes das cidades
+  final citiesNames = <String>[];
+
+  // Percorre todas as cidades
+  for (final city in cities) {
+    // Pega apenas a string que está antes da vírgula
+    final filteredCityName = city.split(',')[0];
+
+    // Adiciona o nome da cidade filtrado
+    citiesNames.add(filteredCityName);
+  }
+
+  // Retorna a lista com os nomes das cidades
+  return citiesNames;
+}
+```
+
+**Bom:**
+```dart
+List<String> getCitiesNames(List<String> cities) {
+  final citiesNames = <String>[];
+
+  for (final city in cities) {
+    // Pega apenas a string que está antes da vírgula
+    final filteredCityName = city.split(',')[0];
+
+    citiesNames.add(filteredCityName);
+  }
+
+  return citiesNames;
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Não deixe código comentado na sua base de código
+Controle de versão existe por um motivo: deixar códigos velhos no seu histórico.
+
+**Ruim:**
+```dart
+doStuff();
+// doOtherStuff();
+// doSomeMoreStuff();
+// doSoMuchStuff();
+```
+
+**Bom:**
+```dart
+doStuff();
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Não comente registro de alterações
+Lembre-se, utilize controle de versão! Não tem necessidade em deixar códigos
+inutlizados, códigos comentados e especialmente registros de alterações.
+Utilize `git log` para pegar o histórico!
+
+**Ruim:**
+```dart
+/**
+ * 2016-12-20: Removidas monads, não entendia elas (RM)
+ * 2016-10-01: Melhoria utilizando monads especiais (JP)
+ * 2016-02-03: Removido checagem de tipos (LI)
+ * 2015-03-14: Adicionada checagem de tipos (JR)
+ */
+int combine(int a, int b) {
+  return a + b;
+}
+```
+
+**Bom:**
+```dart
+int combine(int a, int b) {
+  return a + b;
+}
+```
+**[⬆ voltar ao topo](#Índice)**
+
+### Evite marcadores de posição
+Eles geralmente criam ruídos. Deixe que as funções e nomes de variáveis em conjunto
+com a devida identação e formatação deem a estrutura visual para o seu código.
+
+**Ruim:**
+```dart
+////////////////////////////////////////////////////////////////////////////////
+// Intanciação do Programmer
+////////////////////////////////////////////////////////////////////////////////
+final programmer = Programmer(
+  name: 'Jack',
+  linesOfCode: 500,
+);
+
+////////////////////////////////////////////////////////////////////////////////
+// Implementação do startProject
+////////////////////////////////////////////////////////////////////////////////
+void startProject() {
+  // ...
+};
+```
+
+**Bom:**
+```dart
+final programmer = Programmer(
+  name: 'Jack',
+  linesOfCode: 500,
+);
+
+void startProject() {
+  // ...
+};
+```
+**[⬆ voltar ao topo](#Índice)**
