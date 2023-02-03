@@ -1,4 +1,9 @@
-# clean-code-dart
+# Clean Code em Dart
+Este repositório é uma adaptação do projeto [felipe-augusto/clean-code-javascript](https://github.com/felipe-augusto/clean-code-javascript) para a linguagem Dart.
+
+Repositório original em inglês: [ryanmcdermott/clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
+
+**This repo in English**: [williambarreiro/clean-code-dart-en](https://github.com/williambarreiro/clean-code-dart-en)
 
 ## Índice
   1. [Introdução](#introdução)
@@ -12,14 +17,13 @@
   9. [Tratamento de Erros](#tratamento-de-erros)
   10. [Formatação](#formatação)
   11. [Comentários](#comentários)
-  12. [Traduções](#traduções)
 
 ## Introdução
 ![Imagem humorística da estimativa de qualidade do software baseado na contagem de quantos palavrões você gritou enquanto lia o código.](http://www.osnews.com/images/comics/wtfm.jpg)
 
 Princípios da Engenharia de Software, do livro de Robert C. Martin
 [*Código Limpo*](https://www.amazon.com.br/C%C3%B3digo-Limpo-Habilidades-Pr%C3%A1ticas-Software/dp/8576082675),
-adaptados para Dart. Isto não é um guia de estilos. É um guia para se produzir código [legível, reutilizável e refatorável](https://github.com/ryanmcdermott/3rs-of-software-architecture) em Dart.
+adaptados para Dart. Isto não é um guia de estilos. É um guia para se produzir código [legível, reutilizável e refatorável](https://github.com/ryanmcdermott/3rs-of-software-architecture).
 
 Nem todo princípio demonstrado deve ser seguido rigorosamente, e ainda menos são um consenso universal. Estes princípios são orientações e nada mais, entretanto, foram codificados durante muitos anos de experiência coletiva pelos autores de *Código limpo*.
 
