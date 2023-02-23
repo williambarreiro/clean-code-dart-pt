@@ -65,30 +65,32 @@ Nós iremos ler mais código que escrever. É importante que o código que escre
 
 **Ruim:**
 ```dart
-// Para que diabos serve 86400000?
-Future.delayed(Duration(milliseconds: 86400000), blastOff);
+// Para que diabos serve 32?
+Future.delayed(Duration(minutes: 32), launch);
 ```
 
 **Bom:**
 ```dart
-// Declare-as como final em lowerCamelCase.
-// OBS: millisecondsPerDay será int, pois o tipo será inferido.
-final millisecondsPerDay = 86400000;
+// Declare-as como const se o valor for conhecido em tempo de compilação;
+// Declare-as como final se o valor for atribuído apenas uma vez;
+// Use lowerCamelCase;
+// OBS: setupTimeInMinutes será int, pois o tipo será inferido.
+const setupTimeInMinutes = 32;
 
-Future.delayed(Duration(milliseconds: millisecondsPerDay), blastOff);
+Future.delayed(Duration(minutes: setupTimeInMinutes), launch);
 ```
 **[⬆ voltar ao topo](#Índice)**
 
 ### Use variáveis explicativas
 **Ruim:**
 ```dart
-final address = <String>['One Infinite Loop', 'Cupertino', '95014'];
+const address = <String>['One Infinite Loop', 'Cupertino', '95014'];
 saveCityZipCode(address[1], address[2]);
 ```
 
 **Bom:**
 ```dart
-final address = <String>['One Infinite Loop', 'Cupertino', '95014'];
+const address = <String>['One Infinite Loop', 'Cupertino', '95014'];
 final city = address[1];
 final zipCode = address[2];
 saveCityZipCode(city, zipCode);
@@ -100,7 +102,7 @@ Explicito é melhor que implícito.
 
 **Ruim:**
 ```dart
-final locations = <String>['Austin', 'New York', 'San Francisco'];
+const locations = <String>['Austin', 'New York', 'San Francisco'];
 locations.forEach((l) {
   doStuff();
   doSomeOtherStuff();
@@ -114,7 +116,7 @@ locations.forEach((l) {
 
 **Bom:**
 ```dart
-final locations = <String>['Austin', 'New York', 'San Francisco'];
+const locations = <String>['Austin', 'New York', 'San Francisco'];
 locations.forEach((location) {
   doStuff();
   doSomeOtherStuff();
@@ -156,9 +158,9 @@ void paintCar(Car car, String color) {
 ```
 **[⬆ voltar ao topo](#Índice)**
 
-### Use argumentos padrões ao invés de curto circuitar ou usar condicionais
+### Quando possível, use argumentos padrões ao invés de curto circuitar ou usar condicionais
 
-Argumentos padrões são geralmente mais limpos do que curto circuitos. Esteja ciente que se você usá-los, sua função apenas irá fornecer valores padrões para argumentos `null`.
+Argumentos padrões são geralmente mais limpos do que curtos circuitos. Porém esses argumentos devem ser const, não sendo possível usá-los em todos os casos.
 
 **Ruim:**
 ```dart
@@ -189,14 +191,14 @@ Para tornar mais óbvio quais as propriedades que as funções esperam, você po
 
 **Ruim:**
 ```dart
-void createMenu(String title, String body, String buttonText, bool cancellable) {
+Menu getMenu(String title, String body, String buttonText, bool cancellable) {
   // ...
 }
 ```
 
 **Bom:**
 ```dart
-void createMenu({
+Menu getMenu({
   required String title,
   required String body,
   required String buttonText,
@@ -205,7 +207,7 @@ void createMenu({
   // ...
 }
 
-createMenu(
+final menu = getMenu(
   title: 'Foo',
   body: 'Bar',
   buttonText: 'Baz',
@@ -370,13 +372,10 @@ Widget buildManagerCard(Manager manager) {
 Widget buildEmployeeCard(Employee employee) {
   String projectsLink;
 
-  switch (employee.runtimeType) {
-    case Manager:
-      projectsLink = manager.getMBAProjects();
-      break;
-    case Developer:
-      projectsLink = developer.getGithubLink();
-      break;
+  if (employee is Manager) {
+    projectsLink = manager.getMBAProjects();
+  } else if (employee is Developer) {
+    projectsLink = developer.getGithubLink();
   }
 
   return CustomCard(
@@ -470,7 +469,7 @@ void addItemToCart(List<int> cart, int item) {
   cart.add(item);
 } 
 
-final cart = [1, 2];
+final cart = <int>[1, 2];
 addItemToCart(cart, 3);
 
 print(cart); // [1, 2, 3]
@@ -482,7 +481,7 @@ List<int> addItemToCart(List<int> cart, int item) {
   return [...cart, item];
 }
 
-final cart = [1, 2];
+final cart = <int>[1, 2];
 final newCart = addItemToCart(cart, 3);
 
 print(cart); // [1, 2]
@@ -686,7 +685,7 @@ account.balance = 100;
 **[⬆ voltar ao topo](#Índice)**
 
 
-### Utilize métodos e atributos privados
+### Utilize métodos e atributos privados quando necessário
 Se um método ou atributo deve ser utilizado apenas dentro de uma classe, ele deve ser privado.
 
 **Ruim:**
@@ -1214,12 +1213,12 @@ import 'package:test/test.dart';
 
 group('String', () {
   test('.split() splits the string on the delimiter', () {
-    final string = 'foo,bar,baz';
+    const string = 'foo,bar,baz';
     expect(string.split(','), equals(['foo', 'bar', 'baz']));
   });
 
   test('.trim() removes surrounding whitespace', () {
-    final string = '  foo ';
+    const string = '  foo ';
     expect(string.trim(), equals('foo'));
   });
 });
@@ -1280,7 +1279,7 @@ try {
 ```dart
 try {
   functionThatMightThrow();
-} catch (e, s) {
+} on Exception catch (e, s) {
   // Opção 1:
   log('Error description...', error: e, stackTrace: s);
   // Opção 2:
@@ -1292,7 +1291,7 @@ try {
 **[⬆ voltar ao topo](#Índice)**
 
 ### Não ignore erros nos Futures
-Caso queira usar o future/then, lembre-se de também tratar os erros.
+Usar await e try/catch é muito melhor do que usar future/then. Mas, caso queira usar o future/then, lembre-se de também tratar os erros.
 
 **Ruim:**
 ```dart
@@ -1339,14 +1338,14 @@ typedef predicate<T> = bool Function(T value);
 
 **Bom:**
 ```dart
-// lowerCamelCase for constant names
+// lowerCamelCase para consts
 const daysInWeek = 7;
 const bands = ['AC/DC', 'Led Zeppelin', 'The Beatles'];
 
-// lowerCamelCase for functions
+// lowerCamelCase para funções
 void restoreDatabase() {}
 
-// UpperCamelCase for classes, enum types, typedefs, and type parameters
+// UpperCamelCase para classes, enum types, typedefs, and type parameters
 class Animal {}
 typedef Predicate<T> = bool Function(T value);
 ```
