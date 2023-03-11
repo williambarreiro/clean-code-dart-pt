@@ -3,7 +3,7 @@ Este repositório é uma adaptação do projeto [felipe-augusto/clean-code-javas
 
 Repositório original em inglês: [ryanmcdermott/clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
 
-**This repo in English**: [williambarreiro/clean-code-dart-en](https://github.com/williambarreiro/clean-code-dart-en)
+**This repo in English**: [williambarreiro/clean-code-dart](https://github.com/williambarreiro/clean-code-dart)
 
 ## Índice
   1. [Introdução](#introdução)
